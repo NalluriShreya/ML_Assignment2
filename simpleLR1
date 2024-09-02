@@ -1,0 +1,67 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Sample data
+x_data = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+y_data = np.array([1, 3, 2, 5, 7, 8, 8, 9, 10, 12])
+
+# Step 1: Analytical Linear Regression
+num_samples = len(x_data)
+mean_x = np.mean(x_data)
+mean_y = np.mean(y_data)
+
+# Calculate slope and intercept
+numerator = np.sum((x_data - mean_x) * (y_data - mean_y))
+denominator = np.sum((x_data - mean_x) ** 2)
+slope_analytic = numerator / denominator
+intercept_analytic = mean_y - slope_analytic * mean_x
+
+# Generate predictions
+y_pred_analytic = intercept_analytic + slope_analytic * x_data
+
+# Compute Sum of Squared Errors (SSE)
+SSE_analytic = np.sum((y_data - y_pred_analytic) ** 2)
+
+# Compute Coefficient of Determination (R^2)
+SST = np.sum((y_data - mean_y) ** 2)
+R2_analytic = 1 - SSE_analytic / SST
+
+print("Analytical Solution:")
+print(f"Intercept (Beta 0): {intercept_analytic}")
+print(f"Slope (Beta 1): {slope_analytic}")
+print(f"SSE: {SSE_analytic}")
+print(f"R^2: {R2_analytic}")
+
+# Step 2: Gradient Descent Linear Regression
+
+# Initialize parameters
+intercept_gd = 0
+slope_gd = 0
+learning_rate = 0.01
+num_epochs = 1000
+
+# Perform Gradient Descent
+for epoch in range(num_epochs):
+    y_pred_gd = intercept_gd + slope_gd * x_data
+    residuals = y_pred_gd - y_data
+    intercept_gd -= learning_rate * (1/num_samples) * np.sum(residuals)
+    slope_gd -= learning_rate * (1/num_samples) * np.sum(residuals * x_data)
+
+# Compute SSE and R^2 for Gradient Descent
+SSE_gd = np.sum((y_data - y_pred_gd) ** 2)
+R2_gd = 1 - SSE_gd / SST
+
+print("\nGradient Descent Solution:")
+print(f"Intercept (Beta 0): {intercept_gd}")
+print(f"Slope (Beta 1): {slope_gd}")
+print(f"SSE: {SSE_gd}")
+print(f"R^2: {R2_gd}")
+
+# Visualization of results
+plt.scatter(x_data, y_data, color='blue', label='Data points')
+plt.plot(x_data, y_pred_analytic, color='red', label='Analytical Solution')
+plt.plot(x_data, y_pred_gd, color='green', linestyle='--', label='Gradient Descent Solution')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.show()
